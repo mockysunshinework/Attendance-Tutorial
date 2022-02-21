@@ -3,11 +3,11 @@ class SessionsController < ApplicationController
   end
   
   def create
-    user = User.find_by(email:params[:session][:email].downcase)
+    user = User.find_by(email: params[:session][:email].downcase)
     if user && user.authenticate(params[:session][:password])
       # ログイン後にユーザー情報ページにリダイレクトします。
       log_in user
-      remember user
+      params[:session][:remember_me] == '1' ? remember(user) : forgot(user)
       redirect_to user      
     else
       # ここにはエラーメッセージ用のflashを入れます。

@@ -14,7 +14,7 @@ module SessionsHelper
   
   # 永続的セッションを破棄します。
   def forgot(user)
-    user.forget #Userモデル参照
+    user.forgot #Userモデル参照
     cookies.delete(:user_id)
     cookies.delete(:remember_token)
   end

@@ -42,7 +42,7 @@ class User < ApplicationRecord
   
   # ユーザーのログイン情報を破棄します。
   def forgot
-    update_attribute(:remember,nil)
+    update_attribute(:remember_digest,nil)
   end
 end
 
