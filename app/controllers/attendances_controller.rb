@@ -28,11 +28,22 @@ class AttendancesController < ApplicationController
   end
   
   def update_one_month
+    ActiveRecord::Base.transaction do #トランザクションを開始します。
+      attendances_params.each do |id,item|
+        attendance = Attendance.find(id)
+        attendance.update_attributes!(item) #update_attributesの末尾に!が付いていることがとても重要です。通常、update_attributesの更新処理が失敗した場合はfalseが返されます。しかし、今回のように!をつけている場合はfalseでは無く例外処理を返します。
+      end
+    end
+    flash[:success] = "1ヶ月分の勤怠情報を更新しました。"
+    redirect_to user_url(date:params[:date])
+  rescue ActiveRecord::RecordInvalid #トランザクションによるエラーの分岐です。
+    flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
+    redirect_to attendances_edit_one_month_user_path(date:params[:date])
   end
   
   private
   # 1ヶ月分の勤怠情報を扱います。
   def attendances_params
-  params.equire(:user).permit(attendances:[:started_at, :finished_at, :note])[:attendances]
+  params.require(:user).permit(attendances:[:started_at, :finished_at, :note])[:attendances]
   end
 end
